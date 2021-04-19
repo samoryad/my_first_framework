@@ -26,6 +26,7 @@ class MyFirstFramework:
         method = environ['REQUEST_METHOD']
         # вносим данные в словарь запросов
         request['method'] = method
+        # print(f'словарь типов запроса {request}')
 
         if method == 'POST':
             data = PostRequests().post_request_params(environ)
@@ -49,6 +50,7 @@ class MyFirstFramework:
         # отработка паттерна front controller
         for front in self.fronts_lst:
             front(request)
+        # print(f'общий словарь с FC {request}')
         # запуск контроллера с передачей объекта request
         code, body = view(request)
         start_response(code, [('Content-Type', 'text/html')])
