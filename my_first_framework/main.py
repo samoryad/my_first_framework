@@ -1,4 +1,6 @@
-from urls import routes, fronts
+import quopri
+
+from my_first_framework.requests import PostRequests, GetRequests
 from views import PageNotFound404
 
 
@@ -11,12 +13,30 @@ class MyFirstFramework:
 
     def __call__(self, environ, start_response):
         # получаем адрес, по которому выполнен переход
+        # print(environ)
         path = environ['PATH_INFO']
         # находим нужный контроллер
         # отработка паттерна page controller
         # добавляем слеш, если его забыли прописать
         if path[-1] != '/':
-            path = path + '/'
+            path = f'{path}/'
+
+        request = {}
+        # определяем тип запроса (GET, POST)
+        method = environ['REQUEST_METHOD']
+        # вносим данные в словарь запросов
+        request['method'] = method
+
+        if method == 'POST':
+            data = PostRequests().post_request_params(environ)
+            request['data'] = data
+            print(f'Данные из post-запроса: '
+                  f'{MyFirstFramework.decode_value(data)}')
+        if method == 'GET':
+            request_params = GetRequests().get_request_params(environ)
+            request['request_params'] = request_params
+            print(f'Нам пришли GET-параметры: {request_params}')
+
         # отработка паттерна page controller
         if path in self.routes_lst:
             view = self.routes_lst[path]
@@ -34,5 +54,12 @@ class MyFirstFramework:
         start_response(code, [('Content-Type', 'text/html')])
         return [body.encode('utf-8')]
 
-
-application = MyFirstFramework(routes, fronts)
+    @staticmethod
+    def decode_value(data):
+        """метод, приводящий словарь с post параметрами к корректному виду"""
+        new_data = {}
+        for k, v in data.items():
+            val = bytes(v.replace('%', '=').replace("+", " "), 'UTF-8')
+            val_decode_str = quopri.decodestring(val).decode('UTF-8')
+            new_data[k] = val_decode_str
+        return new_data
