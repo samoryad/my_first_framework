@@ -18,7 +18,7 @@ class MyFirstFramework:
         # находим нужный контроллер
         # отработка паттерна page controller
         # добавляем слеш, если его забыли прописать
-        if path[-1] != '/':
+        if not path.endswith('/'):
             path = f'{path}/'
 
         request = {}
@@ -44,7 +44,6 @@ class MyFirstFramework:
         else:
             view = PageNotFound404()
 
-        request = {}
         # наполняем словарь request элементами
         # этот словарь получат все контроллеры
         # отработка паттерна front controller
