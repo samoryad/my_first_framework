@@ -3,44 +3,59 @@ from datetime import date
 
 from my_first_framework.templator import render
 from patterns.generative_patterns import Engine, Logger
+from patterns.structural_patterns import AppRoute, Debug
 
 # создаём объект основного итерфейса проекта и логгера
 site = Engine()
 logger = Logger('main')
 
+# Словарь для путей
+routes = {}
 
+
+@AppRoute(routes=routes, url='/')
 # контроллер - главная страница
 class Index:
+    @Debug(name='Index')
     def __call__(self, request):
         return '200 OK', render('index.html', objects_list=site.categories)
 
 
 # контроллер "О проекте"
+@AppRoute(routes=routes, url='/about/')
 class About:
+    @Debug(name='About')
     def __call__(self, request):
         return '200 OK', render('about.html')
 
 
 # контроллер "Контакты"
+@AppRoute(routes=routes, url='/contacts/')
 class Contacts:
+    @Debug(name='Contacts')
     def __call__(self, request):
         return '200 OK', render('contacts.html')
 
 
 # контроллер - Расписания
+@AppRoute(routes=routes, url='/study_programs/')
 class StudyPrograms:
+    @Debug(name='StudyPrograms')
     def __call__(self, request):
         return '200 OK', render('study-programs.html', data=date.today())
 
 
 # контроллер обработки несуществующей страницы
 class PageNotFound404:
+    # @Debug(name='NotFound404')
     def __call__(self, request):
         return '404 WHAT', '404 PAGE Not Found'
 
 
 # контроллер - список курсов
+@AppRoute(routes=routes, url='/courses-list/')
 class CoursesList:
+    @Debug(name='CoursesList')
     def __call__(self, request):
         logger.log('Список курсов')
         try:
@@ -54,9 +69,11 @@ class CoursesList:
 
 
 # контроллер - создать курс
+@AppRoute(routes=routes, url='/create-course/')
 class CreateCourse:
     category_id = -1
 
+    @Debug(name='CreateCourse')
     def __call__(self, request):
         if request['method'] == 'POST':
             # метод пост
@@ -91,7 +108,9 @@ class CreateCourse:
 
 
 # контроллер - создать категорию
+@AppRoute(routes=routes, url='/create-category/')
 class CreateCategory:
+    @Debug(name='CreateCategory')
     def __call__(self, request):
 
         if request['method'] == 'POST':
@@ -122,7 +141,9 @@ class CreateCategory:
 
 
 # контроллер - список категорий
+@AppRoute(routes=routes, url='/category-list/')
 class CategoryList:
+    @Debug(name='CategoryList')
     def __call__(self, request):
         logger.log('Список категорий')
         return '200 OK', render(
@@ -130,7 +151,9 @@ class CategoryList:
 
 
 # контроллер - копировать курс
+@AppRoute(routes=routes, url='/copy-course/')
 class CopyCourse:
+    @Debug(name='CopyCourse')
     def __call__(self, request):
         request_params = request['request_params']
 
