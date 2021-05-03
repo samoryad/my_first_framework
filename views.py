@@ -89,16 +89,21 @@ class CreateCourse:
             name = site.decode_value(name)
 
             request['data']['name'] = name
-            print(f'реквест {request}')
+            print(f'отладка реквест --> {request}')
 
             category = None
             if self.category_id != -1:
                 category = site.find_category_by_id(int(self.category_id))
+                print(f'отладка CreateCourse: category --> {category}')
 
                 course = site.create_course('record', name, category)
                 # Добавляем наблюдателей на курс
-                course.observers.append(email_notifier)
-                course.observers.append(sms_notifier)
+                print(f'отладка CreateCourse: course --> {course}')
+                # TODO не работает (не могу разобраться с RecordCourse
+                # TODO нет атрибута observers, он в Subject)
+                # TODO поэтому уведомители пока не работают
+                # course.observers.append(email_notifier)
+                # course.observers.append(sms_notifier)
                 site.courses.append(course)
 
             return '200 OK', render('course_list.html',
@@ -130,7 +135,7 @@ class CreateCategory:
             name = site.decode_value(name)
 
             request['data']['name'] = name
-            print(f'реквест {request}')
+            print(f'отладка реквест CreateCategory --> {request}')
 
             category_id = data.get('category_id')
 
@@ -210,6 +215,7 @@ class AddStudentByCourseCreateView(CreateView):
         return context
 
     def create_obj(self, data: dict):
+        print(f'отладка AddStudentByCourseCreateView: data --> {data}')
         course_name = data['course_name']
         course_name = site.decode_value(course_name)
         course = site.get_course(course_name)
