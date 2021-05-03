@@ -33,7 +33,7 @@ body {
 	color: #666;
 	background-color: #f8f8f8;}
 li {
-	list-style-image: url("images/icon-plus.png");
+	/*list-style-image: url("images/icon-plus.png");*/
 	line-height: 1.6em;}
 table {
 	border-spacing: 0px;}

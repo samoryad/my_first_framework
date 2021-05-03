@@ -17,7 +17,8 @@ class Teacher(User):
 
 # студент
 class Student(User):
-    pass
+    def __init__(self, name):
+        self.name = name
 
 
 class UserFactory:
@@ -28,8 +29,8 @@ class UserFactory:
 
     # порождающий паттерн Фабричный метод
     @classmethod
-    def create(cls, user_type):
-        return cls.user_types[user_type]()
+    def create(cls, user_type, name):
+        return cls.user_types[user_type](name)
 
 
 # порождающий паттерн Прототип - Курс
@@ -126,6 +127,9 @@ class Engine:
         for item in self.students:
             if item.name == name:
                 return item
+
+    def add_student(self):
+        pass
 
     @staticmethod
     def decode_value(val):
