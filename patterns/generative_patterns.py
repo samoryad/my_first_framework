@@ -3,6 +3,9 @@ import quopri
 
 
 # абстрактный пользователь
+from patterns.behavioral_patterns import ConsoleWriter
+
+
 class User:
     pass
 
@@ -95,8 +98,8 @@ class Engine:
         self.categories = []
 
     @staticmethod
-    def create_user(user_type):
-        return UserFactory.create(user_type)
+    def create_user(user_type, name):
+        return UserFactory.create(user_type, name)
 
     @staticmethod
     def create_category(name, category=None):
@@ -118,6 +121,11 @@ class Engine:
             if item.name == name:
                 return item
         return None
+
+    def get_student(self, name) -> Student:
+        for item in self.students:
+            if item.name == name:
+                return item
 
     @staticmethod
     def decode_value(val):
@@ -148,9 +156,10 @@ class SingletonByName(type):
 
 class Logger(metaclass=SingletonByName):
 
-    def __init__(self, name):
+    def __init__(self, name, writer=ConsoleWriter()):
         self.name = name
+        self.writer = writer
 
-    @staticmethod
-    def log(text):
-        print('log--->', text)
+    def log(self, text):
+        print(f'log---> {text}')
+        self.writer.write(text)
