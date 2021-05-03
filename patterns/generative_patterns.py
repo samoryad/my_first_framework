@@ -130,6 +130,7 @@ class Engine:
             if item.name == name:
                 return item
 
+    # TODO описать добавление студента к курсу
     def add_student(self):
         pass
 
