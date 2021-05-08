@@ -1,21 +1,15 @@
-# page controller
 from datetime import date
 
 from my_first_framework.templator import render
 from patterns.architectural_system_pattern_mappers import MapperRegistry
 from patterns.architectural_system_pattern_unit_of_work import UnitOfWork
-from patterns.behavioral_patterns import EmailNotifier, SmsNotifier, \
-    ListView, CreateView, BaseSerializer
+from patterns.behavioral_patterns import ListView, CreateView, BaseSerializer
 from patterns.generative_patterns import Engine, Logger
 from patterns.structural_patterns import AppRoute, Debug
 
 # создаём объект основного итерфейса проекта и логгера
 site = Engine()
 logger = Logger('main')
-
-# создаём уведомителей
-email_notifier = EmailNotifier()
-sms_notifier = SmsNotifier()
 
 # Словарь для путей
 routes = {}
@@ -90,24 +84,22 @@ class CreateCourse:
         if request['method'] == 'POST':
             # метод пост
             data = request['data']
-            print(f'data из реквеста Create Course: {data}')
+            # print(f'data из реквеста Create Course: {data}')
             name = data['name']
             name = site.decode_value(name)
 
             request['data']['name'] = name
-            print(f'отладка реквест --> {request}')
+            # print(f'отладка реквест --> {request}')
 
             category = None
             if self.category_id != -1:
                 category = site.find_category_by_id(int(self.category_id))
-                print(f'отладка CreateCourse: category --> {category}')
+                # print(f'отладка CreateCourse: category --> {category}')
 
                 course = site.create_course('record', name, category)
-                # Добавляем наблюдателей на курс
-                print(f'отладка CreateCourse: course --> {course}')
-                # TODO не работает (не могу разобраться с RecordCourse
-                # TODO нет атрибута observers, он в Subject)
-                # TODO поэтому уведомители пока не работают
+                # Добавляем наблюдателей на курс (сделал в generative patterns,
+                # в Course --> add_student
+                # print(f'отладка CreateCourse: course --> {course}')
                 # course.observers.append(email_notifier)
                 # course.observers.append(sms_notifier)
                 site.courses.append(course)
@@ -141,7 +133,7 @@ class CreateCategory:
             name = site.decode_value(name)
 
             request['data']['name'] = name
-            print(f'отладка реквест CreateCategory --> {request}')
+            # print(f'отладка реквест CreateCategory --> {request}')
 
             category_id = data.get('category_id')
 
@@ -226,14 +218,14 @@ class AddStudentByCourseCreateView(CreateView):
         return context
 
     def create_obj(self, data: dict):
-        print(f'отладка AddStudentByCourseCreateView: data --> {data}')
+        # print(f'отладка AddStudentByCourseCreateView: data --> {data}')
         course_name = data['course_name']
         course_name = site.decode_value(course_name)
         course = site.get_course(course_name)
         student_name = data['student_name']
         student_name = site.decode_value(student_name)
         student = site.get_student(student_name)
-        # TODO отладить добавление студента
+        student.__dict__['courses'] = course_name
         course.add_student(student)
 
 

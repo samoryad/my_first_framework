@@ -35,7 +35,7 @@ class UnitOfWork:
         self.delete_removed()
 
     def insert_new(self):
-        print(self.new_objects)
+        # print(f'отладка insert_new {self.new_objects}')
         for obj in self.new_objects:
             self.MapperRegistry.get_mapper(obj).insert(obj)
 

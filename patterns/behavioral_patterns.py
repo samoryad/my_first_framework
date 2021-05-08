@@ -15,23 +15,33 @@ class Observer:
 class Subject:
     """Класс конкретных наблюдателей"""
     def __init__(self):
-        self.observers = []
+        self.observers = set()
 
     def notify(self):
-        for item in self.observers:
-            item.update(self)
+        # print(f'наблюдатели {self.observers}')
+        obs_copy = self.observers.copy()
+        student = obs_copy.pop()
+        sms_notifier = SmsNotifier()
+        email_notifier = EmailNotifier()
+        # print(f'студент {student}')
+        for el in self.observers:
+            print(f'message to {el.name}')
+            sms_notifier.update(student)
+            email_notifier.update(student)
 
 
 class SmsNotifier(Observer):
     """Класс смс уведомления"""
     def update(self, subject):
-        print('SMS->', 'к нам присоединился', subject.students[-1].name)
+        chosen_course = subject.__dict__['courses']
+        print(f'SMS -> {subject.name} присоединился на курс {chosen_course}')
 
 
 class EmailNotifier(Observer):
     """Класс e-mail уведомления"""
     def update(self, subject):
-        print(('EMAIL->', 'к нам присоединился', subject.students[-1].name))
+        chosen_course = subject.__dict__['courses']
+        print(f'EMAIL -> {subject.name} присоединился на курс {chosen_course}')
 
 
 class BaseSerializer:
@@ -72,7 +82,7 @@ class ListView(TemplateView):
     context_object_name = 'objects_list'
 
     def get_queryset(self):
-        print(self.queryset)
+        # print(f'get_queryset --> {self.queryset}')
         return self.queryset
 
     def get_context_object_name(self):
@@ -99,7 +109,7 @@ class CreateView(TemplateView):
         if request['method'] == 'POST':
             # метод пост
             data = self.get_request_data(request)
-            print(data)
+            # print(data)
             self.create_obj(data)
 
             return self.render_template_with_context()
@@ -111,7 +121,7 @@ class CreateView(TemplateView):
 class ConsoleWriter:
 
     def write(self, text):
-        print(text)
+        print(f'ConsoleWriter {text}')
 
 
 class FileWriter:

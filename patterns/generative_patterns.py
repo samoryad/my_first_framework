@@ -2,9 +2,11 @@ import copy
 import quopri
 
 
-# абстрактный пользователь
 from patterns.architectural_system_pattern_unit_of_work import DomainObject
-from patterns.behavioral_patterns import ConsoleWriter
+from patterns.behavioral_patterns import ConsoleWriter, Subject
+
+
+subject = Subject()
 
 
 class User:
@@ -45,12 +47,16 @@ class CoursePrototype:
 
 
 class Course(CoursePrototype):
-    students = []
-
     def __init__(self, name, category):
         self.name = name
         self.category = category
         self.category.courses.append(self)
+        self.students = []
+
+    def add_student(self, student):
+        self.students.append(student)
+        subject.observers.add(student)
+        subject.notify()
 
 
 # Интерактивный курс
@@ -60,8 +66,6 @@ class InteractiveCourse(Course):
 
 # Курс в записи
 class RecordCourse(Course):
-    # TODO здесь нужен атрибут observers = []
-    # TODO наследование от Subject не сработало
     pass
 
 
@@ -106,6 +110,7 @@ class Engine:
 
     @staticmethod
     def create_user(user_type, name):
+        print(f'был создан {user_type} с именем {name}')
         return UserFactory.create(user_type, name)
 
     @staticmethod
@@ -133,10 +138,6 @@ class Engine:
         for item in self.students:
             if item.name == name:
                 return item
-
-    # TODO описать добавление студента к курсу
-    def add_student(self):
-        pass
 
     @staticmethod
     def decode_value(val):
