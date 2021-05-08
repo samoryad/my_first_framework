@@ -2,8 +2,10 @@
 from datetime import date
 
 from my_first_framework.templator import render
-from patterns.behavioral_patterns import EmailNotifier, SmsNotifier, ListView, \
-    CreateView, BaseSerializer
+from patterns.architectural_system_pattern_mappers import MapperRegistry
+from patterns.architectural_system_pattern_unit_of_work import UnitOfWork
+from patterns.behavioral_patterns import EmailNotifier, SmsNotifier, \
+    ListView, CreateView, BaseSerializer
 from patterns.generative_patterns import Engine, Logger
 from patterns.structural_patterns import AppRoute, Debug
 
@@ -17,6 +19,10 @@ sms_notifier = SmsNotifier()
 
 # Словарь для путей
 routes = {}
+
+
+UnitOfWork.new_current()
+UnitOfWork.get_current().set_mapper_registry(MapperRegistry)
 
 
 @AppRoute(routes=routes, url='/')
@@ -53,7 +59,7 @@ class StudyPrograms:
 
 # контроллер обработки несуществующей страницы
 class PageNotFound404:
-    # @Debug(name='NotFound404')
+    @Debug(name='NotFound404')
     def __call__(self, request):
         return '404 WHAT', '404 PAGE Not Found'
 
@@ -84,7 +90,7 @@ class CreateCourse:
         if request['method'] == 'POST':
             # метод пост
             data = request['data']
-
+            print(f'data из реквеста Create Course: {data}')
             name = data['name']
             name = site.decode_value(name)
 
@@ -189,8 +195,11 @@ class CopyCourse:
 # контроллер - список студентов
 @AppRoute(routes=routes, url='/student-list/')
 class StudentListView(ListView):
-    queryset = site.students
     template_name = 'student_list.html'
+
+    def get_queryset(self):
+        mapper = MapperRegistry.get_current_mapper('student')
+        return mapper.all()
 
 
 @AppRoute(routes=routes, url='/create-student/')
@@ -202,6 +211,8 @@ class StudentCreateView(CreateView):
         name = site.decode_value(name)
         new_obj = site.create_user('student', name)
         site.students.append(new_obj)
+        new_obj.mark_new()
+        UnitOfWork.get_current().commit()
 
 
 @AppRoute(routes=routes, url='/add-student/')
@@ -222,6 +233,7 @@ class AddStudentByCourseCreateView(CreateView):
         student_name = data['student_name']
         student_name = site.decode_value(student_name)
         student = site.get_student(student_name)
+        # TODO отладить добавление студента
         course.add_student(student)
 
 

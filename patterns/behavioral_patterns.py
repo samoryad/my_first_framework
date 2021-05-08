@@ -7,13 +7,13 @@ from my_first_framework.templator import render
 
 
 class Observer:
-
+    """Класс наблюдатель"""
     def update(self, subject):
         pass
 
 
 class Subject:
-
+    """Класс конкретных наблюдателей"""
     def __init__(self):
         self.observers = []
 
@@ -23,19 +23,19 @@ class Subject:
 
 
 class SmsNotifier(Observer):
-
+    """Класс смс уведомления"""
     def update(self, subject):
         print('SMS->', 'к нам присоединился', subject.students[-1].name)
 
 
 class EmailNotifier(Observer):
-
+    """Класс e-mail уведомления"""
     def update(self, subject):
         print(('EMAIL->', 'к нам присоединился', subject.students[-1].name))
 
 
 class BaseSerializer:
-
+    """Класс сериализации"""
     def __init__(self, obj):
         self.obj = obj
 

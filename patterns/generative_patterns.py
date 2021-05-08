@@ -3,11 +3,13 @@ import quopri
 
 
 # абстрактный пользователь
+from patterns.architectural_system_pattern_unit_of_work import DomainObject
 from patterns.behavioral_patterns import ConsoleWriter
 
 
 class User:
-    pass
+    def __init__(self, name):
+        self.name = name
 
 
 # преподаватель
@@ -16,9 +18,10 @@ class Teacher(User):
 
 
 # студент
-class Student(User):
+class Student(User, DomainObject):
     def __init__(self, name):
-        self.name = name
+        self.courses = []
+        super().__init__(name)
 
 
 class UserFactory:
@@ -42,6 +45,7 @@ class CoursePrototype:
 
 
 class Course(CoursePrototype):
+    students = []
 
     def __init__(self, name, category):
         self.name = name
