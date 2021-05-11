@@ -35,6 +35,7 @@ class MyFirstFramework:
                   f'{MyFirstFramework.decode_value(data)}')
         if method == 'GET':
             request_params = GetRequests().get_request_params(environ)
+            request_params = MyFirstFramework.decode_value(request_params)
             request['request_params'] = request_params
             print(f'Нам пришли GET-параметры: {request_params}')
 
